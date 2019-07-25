@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<style type="text/css">
+			*{
+				font-size: 14px;
+				padding: 0;
+				margin: 0;
+			}
+			.test-box{
+				margin: 10px;
+				color: #636363;
+				padding: 0;
+				display: inline-block;
+				border: 1px dashed #ddd;
+				border-right: none 0;
+				border-bottom: none 0;
+			}
+		
+			.test-box td{
+				position: relative;
+				float: left;
+				padding: 0 16px;
+				height: 48px;
+				line-height: 48px;
+				width: 160px;
+				border-right: 1px dashed #ddd;
+				border-bottom: 1px dashed #ddd;
+			}
+			.test-box td a{
+				color: #63afe0;
+			}
+			.test-box td a span{
+				font-size: 26px;
+				margin:0 0 0 4px;
+			}
+			.test-box tr td:first-child{
+				width: 120px;
+			}
+			.test-box td .next{
+				color: #63afe0;
+				position: absolute;
+				z-index: 10;
+				top: -5px;
+				left: -1px;
+				padding: 0 48px 0 16px;
+				line-height: 54px;
+				border: 1px solid #ddd;
+				white-space: nowrap;
+				background: #fff url(left_jt.jpg) right center no-repeat;
+				padding: 0;
+				width:0px;
+				border: 0;
+				overflow: hidden;
+				transition: all .1s;
+				-webkit-transition:all .1s;
+			}
+			
+			.test-box td .setshow{
+				width: auto;
+				padding: 0 48px 0 16px;
+				border: 1px solid #ddd;
+				overflow: visible;
+				transition: all 0s 0;
+				-webkit-transition:all 0;
+			}
+			@-webkit-keyframes fadeInLeft{
+				from {
+					opacity: 0;
+					-webkit-transform: translate3d(0, 0, 0);
+					transform: translate3d(0, 0, 0);
+				}
+				to {
+					opacity: 1;
+					-webkit-transform: none;
+					transform: none;
+				}
+			}
+      .test-box thead td{
+      	text-align: center;
+      	font-weight: bold;
+      }    
+		</style>
+	</head>
+	<body>
+		
+		<table class="test-box" border="0" cellpadding="0" cellpadding="0">
+			<thead></thead>
+			<tbody></tbody>
+		</table>
+	</body>
+	<script>
+		var testFun=function(){
+			function overText(){
+				var allTestA=$('.test-box td a');
+				$.each(allTestA,function(i,n){
+					var text = $(n).html();
+					if(text.length >5 ){
+						$(n).html(text.substr(0,5)+"...");
+						$(n).append("<span>»</span>")
+					}
+				})
+			}
+			function textInit(){
+				$('.test-box td a').click(function(){
+					$('.test-box td .next').removeClass("setshow");
+					$(this).siblings(".next").addClass("setshow");
+				})
+				$('.test-box td .next').click(function(){
+					$(this).removeClass("setshow");
+				})
+			}
+			function getJson(){
+				var headjson=['申请类型',"申请内容","申批人","方式"];
+				var headhtml=""
+				$.each(headjson, function(i,n) {
+					headhtml+='<td>'+n+'</td>'
+				});
+				headhtml='<tr>'+headhtml+"</tr>";
+				$('.test-box thead').html(headhtml);
+				
+				var htmlData=""
+				$.ajax({
+				type : 'get',
+				url : "data.json",
+				dataType : 'json',
+				async : 'false',
+				success : function(data){
+					if(data && data.length>0){
+						$.each(data,function(i,n){
+							htmlData+='<tr><td>'+n.title+'</td><td><a title="展开查看全部">'+n.description+'</a><div class="next">'+n.description+'</div></td><td></td><td></td></tr>'
+							$('.test-box tbody').html(htmlData);
+						})
+						overText();
+						textInit();
+					}
+				},
+				error:function(){
+					alert("接口请求失败");
+				}
+				});
+			}
+			return{
+				getJson:getJson
+			}
+		}()
+		
+		$(function(){
+			testFun.getJson();
+		})
+		
+	</script>
+	
+</html>
